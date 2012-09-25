@@ -1,0 +1,6 @@
+username=rsandel
+password=rsandel
+servername=localhost
+typedriver=net.sourceforge.jtds.jdbc.Driver
+databasename=lotto
+

@@ -1,0 +1,79 @@
+<%@ page import="java.util.*"%>
+<%@ page import="java.io.*"%>
+<%@ page import="java.sql.*"%>
+ 
+<html>
+	<head><title>Added Employee ResultUser</title></head>
+	
+	<body>
+	
+		<%
+			String strEmployeeName = null;
+			String strEmployeeAddress = null;
+			
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+				
+			try {
+				if (request.getParameter("emp_name") != null) {
+				
+					strEmployeeName = request.getParameter("emp_name");
+					
+					if (request.getParameter("emp_address") != null) { 
+						strEmployeeAddress = request.getParameter("emp_address");				
+					} 
+				} 	
+				
+				System.out.println("employee name entry: " + strEmployeeName);
+				System.out.println("employee address entry: " + strEmployeeAddress);
+								
+        Properties property = null;
+
+        String propFile = "C:/apache-tomcat-6.0.29/webapps/dbconnection/dbsource.property";
+        FileInputStream fis = new FileInputStream(propFile) ;
+        property = new Properties();
+        property.load(fis);
+            
+        // getting file name from properties
+        String name = property.getProperty("username");
+        String password = property.getProperty("password");
+        String server = property.getProperty("servername");
+        String typedriver = property.getProperty("typedriver");
+        String dbName = property.getProperty("databasename");   
+                       				  
+        System.out.println("name: " + name);          
+			  System.out.println("password: " + password);
+        System.out.println("server: " + server);
+        System.out.println("typedriver: " + typedriver);
+        System.out.println("dbName: " + dbName);
+            
+        //db setup and connection
+        Class.forName(typedriver);			
+	      //String url = "jdbc:jtds:sqlserver://"+db.getServerName()+":"+db.getPortDB()+"//"+db.getDBName();
+	      String url = "jdbc:jtds:sqlserver://"+server+":1433"+"//"+dbName;
+	     
+        conn = DriverManager.getConnection(url, name, password);
+       
+        String query = "insert into Employee(name, address) values(?, ?)";
+        
+        pstmt = conn.prepareStatement(query); // create a statement
+        pstmt.setString(1, strEmployeeName); // set input parameter 1
+        pstmt.setString(2, strEmployeeAddress); // set input parameter 2            
+        pstmt.executeUpdate(); // execute insert statement  
+    	} catch (IOException ioe) {
+    		  System.out.println("IOException occured: " + ioe.getMessage());
+    	} catch (SQLException sqle) {
+          System.out.println("SQLException occured: " + sqle.getMessage());  	
+    	}	catch (Exception e) {				
+  				System.out.println(e.getMessage());			  								
+			}	finally {
+			   if (conn!=null) {
+			     conn.close();
+         }
+      }					
+		%>
+    
+    <h1><%=strEmployeeName%> succefully added to the database.<h1>
+    <p><a href="/listEmployees.jsp">Click here for the listing of all employees</a></p> 		
+	</body>
+</html>
